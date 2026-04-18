@@ -45,7 +45,7 @@ export function WinModal({
               BINGO!
             </h2>
             <p className="text-bingo-gold font-black uppercase tracking-widest text-sm mb-6">
-              🏆 @[USER] WON! 🏆
+              🏆 @YOU WON! 🏆
             </p>
 
             <div className="bg-black/30 p-2 rounded-2xl border border-white/10 w-full mb-6">
@@ -53,20 +53,30 @@ export function WinModal({
                 Winning Cartela #{cartelaNumber}
               </p>
               <div className="grid grid-cols-5 gap-0.5">
-                {card.map((row, r) =>
-                  row.map((cell, c) => (
-                    <div
-                      key={`${r}-${c}`}
-                      className={cn(
-                        "aspect-square rounded-[2px] flex items-center justify-center text-[7px] font-bold",
-                        cell.marked
-                          ? "bg-bingo-green text-white"
-                          : "bg-white/5 text-white/20",
-                      )}
-                    >
-                      {cell.number === "FREE" ? "★" : cell.number}
-                    </div>
-                  )),
+                {card && card.length > 0 ? (
+                  card.map((row, r) =>
+                    row && row.length > 0
+                      ? row.map((cell, c) => (
+                          <div
+                            key={`${r}-${c}`}
+                            className={cn(
+                              "aspect-square rounded-[2px] flex items-center justify-center text-[7px] font-bold",
+                              cell && cell.marked
+                                ? "bg-bingo-green text-white"
+                                : "bg-white/5 text-white/20",
+                            )}
+                          >
+                            {cell && cell.number === "FREE"
+                              ? "★"
+                              : (cell?.number ?? "")}
+                          </div>
+                        ))
+                      : null,
+                  )
+                ) : (
+                  <div className="col-span-5 text-center text-gray-500 py-2">
+                    Loading card...
+                  </div>
                 )}
               </div>
             </div>
