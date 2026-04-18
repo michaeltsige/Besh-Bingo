@@ -42,6 +42,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${outfit.variable} bg-bingo-deep-purple`}
+      suppressHydrationWarning
     >
       <body className="font-sans antialiased">
         {children}
