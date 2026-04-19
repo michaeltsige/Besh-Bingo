@@ -39,7 +39,7 @@ export function BingoApp() {
       {showHeader && (
         <header className="px-6 pt-5 pb-2 flex justify-between items-center">
           <h1 className="text-xl font-display font-extrabold tracking-wide text-white">
-            DIL BINGO
+            BESH BINGO
           </h1>
           <button
             onClick={() => game.setActiveTab("rules")}

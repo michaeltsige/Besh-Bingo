@@ -90,10 +90,10 @@ function OverviewTab() {
     >
       <div className="bg-gradient-to-br from-bingo-accent/20 to-indigo-600/20 rounded-2xl p-5 border border-bingo-accent/30">
         <h2 className="text-bingo-gold font-bold text-lg mb-2">
-          Welcome to Dil Bingo
+          Welcome to Besh Bingo
         </h2>
         <p className="text-gray-300 text-sm leading-relaxed">
-          Dil Bingo is a classic 75-ball bingo game where players mark numbers
+          Besh Bingo is a classic 75-ball bingo game where players mark numbers
           on their cards as they are called. The first player to complete a
           winning pattern wins the prize pool!
         </p>
