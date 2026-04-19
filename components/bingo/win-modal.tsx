@@ -17,7 +17,7 @@ export function WinModal({
   visible,
   card,
   timer,
-  cartelaNumber = 410,
+  cartelaNumber = 320,
   onBackToLobby,
 }: WinModalProps) {
   return (

@@ -9,28 +9,42 @@ import { ScoresScreen } from "@/components/bingo/screens/scores-screen";
 import { HistoryScreen } from "@/components/bingo/screens/history-screen";
 import { WalletScreen } from "@/components/bingo/screens/wallet-screen";
 import { ProfileScreen } from "@/components/bingo/screens/profile-screen";
+import { RulesScreen } from "@/components/bingo/screens/rules-screen";
 import { LoadingOverlay } from "@/components/bingo/loading-overlay";
 import { WinModal } from "@/components/bingo/win-modal";
 
 export function BingoApp() {
   const game = useBingoGame();
 
-  // Live game only renders when the user is on the GAME tab AND playing.
-  // This way, tapping another tab in the bottom nav fully hides the board.
   const showGame = game.isPlaying && game.activeTab === "game";
   const showHome = !game.isPlaying && game.activeTab === "game";
-
-  // Lobby header is only shown on the home/lobby state.
+  const showRules = game.activeTab === "rules";
   const showHeader = showHome;
+
+  const handleBackFromRules = () => {
+    game.setActiveTab("game");
+  };
+
+  // Rules screen takes over the entire view
+  if (showRules) {
+    return (
+      <div className="flex flex-col h-screen w-full bg-bingo-deep-purple font-sans select-none max-w-[430px] mx-auto overflow-hidden relative border-x border-white/5">
+        <RulesScreen onBack={handleBackFromRules} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen w-full bg-bingo-deep-purple font-sans select-none max-w-[430px] mx-auto overflow-hidden relative border-x border-white/5">
       {showHeader && (
         <header className="px-6 pt-5 pb-2 flex justify-between items-center">
           <h1 className="text-xl font-display font-extrabold tracking-wide text-white">
-            Besh BINGO
+            DIL BINGO
           </h1>
-          <button className="bg-white/5 px-4 py-1.5 rounded-full text-xs font-semibold border border-white/10 backdrop-blur-md text-gray-100">
+          <button
+            onClick={() => game.setActiveTab("rules")}
+            className="bg-white/5 px-4 py-1.5 rounded-full text-xs font-semibold border border-white/10 backdrop-blur-md text-gray-100 hover:bg-white/10 transition-colors"
+          >
             Rules
           </button>
         </header>
