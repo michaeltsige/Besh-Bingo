@@ -1,158 +1,192 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useState } from "react";
-import type {
-  BingoCell,
-  GameStats,
-  ScoreFilter,
-  TabType,
-} from "@/lib/bingo/types";
-import { INITIAL_GAME_STATS } from "@/lib/bingo/constants";
-import { checkBingo, cloneCard, generateBingoCard } from "@/lib/bingo/logic";
+import { useCallback, useEffect, useState } from "react"
+import type { BingoCell, GameStats, ScoreFilter, TabType, Cartela, GameMode } from "@/lib/bingo/types"
+import { INITIAL_GAME_STATS } from "@/lib/bingo/constants"
+import { checkBingo, cloneCard, generateBingoCard } from "@/lib/bingo/logic"
 
 export function useBingoGame() {
-  const [activeTab, setActiveTab] = useState<TabType>("game");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [card, setCard] = useState<BingoCell[][]>([]);
-  const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
-  const [gameStats, setGameStats] = useState<GameStats>(INITIAL_GAME_STATS);
-  const [automatic, setAutomatic] = useState(true);
-  const [showWinModal, setShowWinModal] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [timer] = useState(1);
-  const [scoreFilter, setScoreFilter] = useState<ScoreFilter>("daily");
-  const [gameStarted, setGameStarted] = useState(false);
-  const [isWatching, setIsWatching] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>("game")
+  const [gameMode, setGameMode] = useState<GameMode>("lobby")
+  const [cartelas, setCartelas] = useState<Cartela[]>([])
+  const [activeCartelaIndex, setActiveCartelaIndex] = useState(0)
+  const [calledNumbers, setCalledNumbers] = useState<number[]>([])
+  const [gameStats, setGameStats] = useState<GameStats>(INITIAL_GAME_STATS)
+  const [automatic, setAutomatic] = useState(true)
+  const [showWinModal, setShowWinModal] = useState(false)
+  const [winningCartela, setWinningCartela] = useState<Cartela | null>(null) // Add this
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [timer] = useState(1)
+  const [scoreFilter, setScoreFilter] = useState<ScoreFilter>("daily")
+  const [wallet] = useState({ mainBalance: 2, playBalance: 80 })
+  const [stake, setStake] = useState(10)
 
-  // Initialize the player's card on mount.
-  useEffect(() => {
-    setCard(generateBingoCard());
-  }, []);
+  const activeCard = cartelas[activeCartelaIndex]?.card || []
 
-  const resetGameState = useCallback(() => {
-    setCard(generateBingoCard());
-    setCalledNumbers([]);
-    setGameStats((prev) => ({ ...prev, calledCount: 0 }));
-    setShowWinModal(false);
-  }, []);
+  const handlePlayClick = useCallback((selectedStake?: number) => {
+    if (selectedStake) {
+      setStake(selectedStake)
+    }
+    setGameMode("selecting")
+  }, [])
 
-  const handleStartGame = useCallback(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setIsPlaying(true);
-      setGameStarted(true);
-      setIsWatching(false);
-      setLoading(false);
-      resetGameState();
-    }, 1000);
-  }, [resetGameState]);
+  const handleSelectCartelas = useCallback((selected: Cartela[]) => {
+    setCartelas(selected)
+    setGameMode("playing")
+    setCalledNumbers([])
+    setGameStats(prev => ({ ...prev, calledCount: 0 }))
+  }, [])
+
+  const handleBackFromSelection = useCallback(() => {
+    setGameMode("lobby")
+  }, [])
 
   const handleWatchGame = useCallback(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setIsPlaying(true);
-      setGameStarted(false);
-      setIsWatching(true);
-      setLoading(false);
-      setCalledNumbers([]);
-      setGameStats((prev) => ({ ...prev, calledCount: 0 }));
-    }, 500);
-  }, []);
+    setGameMode("watching")
+    setCalledNumbers([])
+    setGameStats(prev => ({ ...prev, calledCount: 0 }))
+  }, [])
+
+  const resetGameState = useCallback(() => {
+    setCartelas([])
+    setActiveCartelaIndex(0)
+    setCalledNumbers([])
+    setGameStats(prev => ({ ...prev, calledCount: 0 }))
+    setShowWinModal(false)
+    setWinningCartela(null) // Reset winning cartela
+  }, [])
 
   const handleCellClick = useCallback(
-    (r: number, c: number) => {
-      if (!isPlaying || !gameStarted || isWatching) return;
-      const cell = card[r]?.[c];
-      if (!cell || cell.number === "FREE") return;
+    (r: number, c: number, cartelaIndex: number = activeCartelaIndex) => {
+      if (gameMode !== "playing") return
+      
+      const targetCartela = cartelas[cartelaIndex]
+      if (!targetCartela) return
+      
+      const currentCard = targetCartela.card
+      if (!currentCard) return
+      
+      const cell = currentCard[r]?.[c]
+      if (!cell || cell.number === "FREE") return
 
-      const newCard = cloneCard(card);
-      newCard[r][c].marked = !newCard[r][c].marked;
-      setCard(newCard);
+      const newCartelas = [...cartelas]
+      const newCard = cloneCard(currentCard)
+      newCard[r][c].marked = !newCard[r][c].marked
+      newCartelas[cartelaIndex] = { ...targetCartela, card: newCard }
+      setCartelas(newCartelas)
 
-      if (checkBingo(newCard)) {
-        setShowWinModal(true);
+      // Check each cartela for bingo
+      for (const cartela of newCartelas) {
+        if (checkBingo(cartela.card)) {
+          setWinningCartela(cartela) // Set the winning cartela
+          setShowWinModal(true)
+          break
+        }
       }
     },
-    [card, isPlaying, gameStarted, isWatching],
-  );
+    [cartelas, activeCartelaIndex, gameMode],
+  )
+
+  const switchCartela = useCallback((index: number) => {
+    if (index >= 0 && index < cartelas.length) {
+      setActiveCartelaIndex(index)
+    }
+  }, [cartelas.length])
 
   const callNextNumber = useCallback(() => {
-    if (!gameStarted || isWatching) return;
-    if (calledNumbers.length >= 75) return;
+    if (gameMode !== "playing" && gameMode !== "watching") return
+    if (calledNumbers.length >= 75) return
 
-    let nextNum: number;
+    let nextNum: number
     do {
-      nextNum = Math.floor(Math.random() * 75) + 1;
-    } while (calledNumbers.includes(nextNum));
+      nextNum = Math.floor(Math.random() * 75) + 1
+    } while (calledNumbers.includes(nextNum))
 
-    const newCalled = [nextNum, ...calledNumbers];
-    setCalledNumbers(newCalled);
-    setGameStats((prev) => ({ ...prev, calledCount: prev.calledCount + 1 }));
+    const newCalled = [nextNum, ...calledNumbers]
+    setCalledNumbers(newCalled)
+    setGameStats(prev => ({ ...prev, calledCount: prev.calledCount + 1 }))
 
-    // Auto mark matching cells when enabled.
-    if (automatic) {
-      const newCard = cloneCard(card);
-      let markedAny = false;
-      newCard.forEach((row) => {
-        row.forEach((cell) => {
-          if (cell.number === nextNum) {
-            cell.marked = true;
-            markedAny = true;
+    if (automatic && gameMode === "playing") {
+      const newCartelas = [...cartelas]
+      
+      newCartelas.forEach((cartela, idx) => {
+        const newCard = cloneCard(cartela.card)
+        let markedAny = false
+        newCard.forEach((row) => {
+          row.forEach((cell) => {
+            if (cell.number === nextNum) {
+              cell.marked = true
+              markedAny = true
+            }
+          })
+        })
+        if (markedAny) {
+          newCartelas[idx] = { ...cartela, card: newCard }
+        }
+      })
+      
+      if (newCartelas.some((c, i) => c.card !== cartelas[i].card)) {
+        setCartelas(newCartelas)
+        
+        // Check for bingo after auto-marking
+        for (const cartela of newCartelas) {
+          if (checkBingo(cartela.card)) {
+            setWinningCartela(cartela) // Set the winning cartela
+            setShowWinModal(true)
+            break
           }
-        });
-      });
-      if (markedAny) {
-        setCard(newCard);
-        if (checkBingo(newCard)) {
-          setShowWinModal(true);
         }
       }
     }
-  }, [automatic, calledNumbers, card, gameStarted, isWatching]);
+  }, [automatic, calledNumbers, cartelas, gameMode])
 
   const refreshCalled = useCallback(() => {
-    if (!gameStarted) return;
-    setCalledNumbers([]);
-    setGameStats((prev) => ({ ...prev, calledCount: 0 }));
-  }, [gameStarted]);
+    if (gameMode !== "playing" && gameMode !== "watching") return
+    setCalledNumbers([])
+    setGameStats(prev => ({ ...prev, calledCount: 0 }))
+  }, [gameMode])
 
   const leaveGame = useCallback(() => {
-    setIsPlaying(false);
-    setGameStarted(false);
-    setIsWatching(false);
-  }, []);
+    setGameMode("lobby")
+    resetGameState()
+  }, [resetGameState])
 
   const closeWinAndReturnToLobby = useCallback(() => {
-    setShowWinModal(false);
-    setIsPlaying(false);
-    setGameStarted(false);
-    setIsWatching(false);
-    resetGameState();
-  }, [resetGameState]);
+    setShowWinModal(false)
+    setGameMode("lobby")
+    resetGameState()
+  }, [resetGameState])
 
   const logout = useCallback(() => {
-    setIsPlaying(false);
-    setGameStarted(false);
-    setIsWatching(false);
-    setActiveTab("game");
-  }, []);
+    setGameMode("lobby")
+    resetGameState()
+    setActiveTab("game")
+  }, [resetGameState])
+
+  const isPlaying = gameMode === "playing"
+  const isWatching = gameMode === "watching"
 
   return {
     // State
     activeTab,
+    gameMode,
     isPlaying,
-    card,
+    isWatching,
+    cartelas,
+    activeCartelaIndex,
+    card: activeCard,
     calledNumbers,
     gameStats,
     automatic,
     showWinModal,
+    winningCartela, // Export winning cartela
     soundEnabled,
     loading,
     timer,
     scoreFilter,
-    isWatching,
-    gameStarted,
+    wallet,
+    stake,
 
     // Setters
     setActiveTab,
@@ -161,15 +195,18 @@ export function useBingoGame() {
     setScoreFilter,
 
     // Actions
-    handleStartGame,
+    handlePlayClick,
+    handleSelectCartelas,
+    handleBackFromSelection,
     handleWatchGame,
     handleCellClick,
+    switchCartela,
     callNextNumber,
     refreshCalled,
     leaveGame,
     closeWinAndReturnToLobby,
     logout,
-  };
+  }
 }
 
-export type UseBingoGame = ReturnType<typeof useBingoGame>;
+export type UseBingoGame = ReturnType<typeof useBingoGame>

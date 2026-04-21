@@ -56,13 +56,13 @@ export function WatchingBanner() {
         ONLY
       </h3>
       <p className="text-xs text-gray-400 leading-relaxed font-semibold max-w-[180px]">
-        የዚህ ዙር ጨዋታ
+        Game already
         <br />
-        ተጀምሯል:: አዲስ
+        started
         <br />
-        ዙር እስኪጀምር
+        Wait for
         <br />
-        እዚህ ይጠብቁ::
+        round end.
       </p>
     </div>
   )

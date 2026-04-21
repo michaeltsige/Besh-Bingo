@@ -1,25 +1,21 @@
-"use client";
+"use client"
 
-import { AnimatePresence, motion } from "motion/react";
-import { Trophy } from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { BingoCell } from "@/lib/bingo/types";
+import { AnimatePresence, motion } from "motion/react"
+import { Trophy } from "lucide-react"
+import { cn } from "@/lib/utils"
+import type { Cartela } from "@/lib/bingo/types"
 
 interface WinModalProps {
-  visible: boolean;
-  card: BingoCell[][];
-  timer: number;
-  cartelaNumber?: number;
-  onBackToLobby: () => void;
+  visible: boolean
+  winningCartela: Cartela | null
+  timer: number
+  onBackToLobby: () => void
 }
 
-export function WinModal({
-  visible,
-  card,
-  timer,
-  cartelaNumber = 320,
-  onBackToLobby,
-}: WinModalProps) {
+export function WinModal({ visible, winningCartela, timer, onBackToLobby }: WinModalProps) {
+  const cartelaNumber = winningCartela?.id || 410
+  const card = winningCartela?.card || []
+
   return (
     <AnimatePresence>
       {visible && (
@@ -36,17 +32,10 @@ export function WinModal({
           >
             <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-bingo-gold/20 to-transparent pointer-events-none" />
 
-            <Trophy
-              size={64}
-              className="text-bingo-gold mb-4 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]"
-            />
+            <Trophy size={64} className="text-bingo-gold mb-4 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]" />
 
-            <h2 className="text-4xl font-display font-black text-white italic mb-2 tracking-tighter">
-              BINGO!
-            </h2>
-            <p className="text-bingo-gold font-black uppercase tracking-widest text-sm mb-6">
-              🏆 @YOU WON! 🏆
-            </p>
+            <h2 className="text-4xl font-display font-black text-white italic mb-2 tracking-tighter">BINGO!</h2>
+            <p className="text-bingo-gold font-black uppercase tracking-widest text-sm mb-6">🏆 @YOU WON! 🏆</p>
 
             <div className="bg-black/30 p-2 rounded-2xl border border-white/10 w-full mb-6">
               <p className="text-[8px] font-bold text-gray-500 uppercase mb-2 tracking-widest">
@@ -55,28 +44,22 @@ export function WinModal({
               <div className="grid grid-cols-5 gap-0.5">
                 {card && card.length > 0 ? (
                   card.map((row, r) =>
-                    row && row.length > 0
-                      ? row.map((cell, c) => (
-                          <div
-                            key={`${r}-${c}`}
-                            className={cn(
-                              "aspect-square rounded-[2px] flex items-center justify-center text-[7px] font-bold",
-                              cell && cell.marked
-                                ? "bg-bingo-green text-white"
-                                : "bg-white/5 text-white/20",
-                            )}
-                          >
-                            {cell && cell.number === "FREE"
-                              ? "★"
-                              : (cell?.number ?? "")}
-                          </div>
-                        ))
-                      : null,
+                    row && row.length > 0 ? (
+                      row.map((cell, c) => (
+                        <div
+                          key={`${r}-${c}`}
+                          className={cn(
+                            "aspect-square rounded-[2px] flex items-center justify-center text-[7px] font-bold",
+                            cell && cell.marked ? "bg-bingo-green text-white" : "bg-white/5 text-white/20",
+                          )}
+                        >
+                          {cell && cell.number === "FREE" ? "★" : cell?.number ?? ""}
+                        </div>
+                      ))
+                    ) : null
                   )
                 ) : (
-                  <div className="col-span-5 text-center text-gray-500 py-2">
-                    Loading card...
-                  </div>
+                  <div className="col-span-5 text-center text-gray-500 py-2">Loading card...</div>
                 )}
               </div>
             </div>
@@ -98,5 +81,5 @@ export function WinModal({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

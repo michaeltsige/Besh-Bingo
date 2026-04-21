@@ -1,11 +1,12 @@
 "use client"
 
 import { motion } from "motion/react"
-import type { BingoCell, GameStats } from "@/lib/bingo/types"
+import type { BingoCell, GameStats, Cartela } from "@/lib/bingo/types"
 import { MasterBoard } from "@/components/bingo/game/master-board"
 import { BallArea } from "@/components/bingo/game/ball-area"
 import { AutomaticToggle } from "@/components/bingo/game/automatic-toggle"
 import { CartelaCard, WatchingBanner } from "@/components/bingo/game/cartela-card"
+import { cn } from "@/lib/utils"
 
 interface GameScreenProps {
   card: BingoCell[][]
@@ -16,10 +17,13 @@ interface GameScreenProps {
   isWatching: boolean
   onToggleAutomatic: () => void
   onToggleSound: () => void
-  onCellClick: (row: number, col: number) => void
+  onCellClick: (row: number, col: number, cartelaIndex?: number) => void
   onLeave: () => void
   onRefresh: () => void
   onNextNumber: () => void
+  cartelas?: Cartela[]
+  activeCartelaIndex?: number
+  onSwitchCartela?: (index: number) => void
 }
 
 export function GameScreen({
@@ -35,6 +39,9 @@ export function GameScreen({
   onLeave,
   onRefresh,
   onNextNumber,
+  cartelas = [],
+  activeCartelaIndex = 0,
+  onSwitchCartela,
 }: GameScreenProps) {
   const stats = [
     { label: "Game ID", val: gameStats.gameId, highlight: true },
@@ -82,7 +89,36 @@ export function GameScreen({
           </div>
 
           <div className="flex-1 overflow-y-auto px-3 pb-3">
-            {isWatching ? <WatchingBanner /> : <CartelaCard card={card} onCellClick={onCellClick} />}
+            {isWatching ? (
+              <WatchingBanner />
+            ) : (
+              <div className="flex flex-col gap-3">
+                {/* Show all cartelas stacked vertically */}
+                {cartelas.map((cartela, index) => (
+                  <div key={cartela.id} className="flex flex-col">
+                    {/* Cartela header with number */}
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                        Cartela {index + 1} of {cartelas.length} #{cartela.id}
+                      </p>
+                      {cartelas.length > 1 && (
+                        <div className={cn(
+                          "w-2 h-2 rounded-full",
+                          index === activeCartelaIndex ? "bg-bingo-green" : "bg-white/20"
+                        )} />
+                      )}
+                    </div>
+                    
+                    {/* Cartela Card */}
+                    <CartelaCard 
+                      card={cartela.card} 
+                      onCellClick={(r, c) => onCellClick(r, c, index)} 
+                      cartelaNumber={cartela.id}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

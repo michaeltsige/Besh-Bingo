@@ -1,4 +1,4 @@
-import type { RecentGame, TopPlayer } from "./types";
+import type { RecentGame, TopPlayer } from "./types"
 
 export const BINGO_COLUMNS: Record<string, [number, number]> = {
   B: [1, 15],
@@ -6,7 +6,7 @@ export const BINGO_COLUMNS: Record<string, [number, number]> = {
   N: [31, 45],
   G: [46, 60],
   O: [61, 75],
-};
+}
 
 export const MOCK_RECENT_GAMES: RecentGame[] = [
   {
@@ -27,30 +27,33 @@ export const MOCK_RECENT_GAMES: RecentGame[] = [
     winners: 1,
     status: "Win",
   },
-];
+]
 
 export const MOCK_TOP_PLAYERS_DAILY: TopPlayer[] = [
-  { name: "@SOMEONE", wins: 24 },
-  { name: "@ABEBE", wins: 19 },
+  { name: "@ABEBE", wins: 24 },
+  { name: "@KEBEDE", wins: 19 },
   { name: "@ALEMU", wins: 18 },
-  { name: "@KEBEDE", wins: 15 },
-  { name: "@ASHENAFI", wins: 12 },
+  { name: "@BRUK", wins: 15 },
+  { name: "@GEORGE", wins: 12 },
   { name: "@TOLOSA", wins: 10 },
-];
+]
 
 export const MOCK_TOP_PLAYERS_WEEKLY: TopPlayer[] = [
-  { name: "@ABEBE", wins: 1420 },
-  { name: "@KEBEDE", wins: 1240 },
-  { name: "@NATI", wins: 1100 },
-  { name: "@EYOEL", wins: 980 },
-  { name: "@DANI", wins: 850 },
-  { name: "@TOMMY", wins: 720 },
-];
+  { name: "@KING", wins: 1420 },
+  { name: "@LUCKY", wins: 1240 },
+  { name: "@MIK", wins: 1100 },
+  { name: "@NATI", wins: 980 },
+  { name: "@ALEMU", wins: 850 },
+  { name: "@KEBE", wins: 720 },
+]
 
 export const INITIAL_GAME_STATS = {
   gameId: "DBSVQOLB",
-  players: 220,
+  players: 334,
   bet: 10,
-  derash: 2200,
+  derash: 2672,
   calledCount: 0,
-};
+}
+
+// Mock active game state - toggle this to simulate game in progress
+export const MOCK_HAS_ACTIVE_GAME = true
