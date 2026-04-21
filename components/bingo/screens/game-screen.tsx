@@ -124,7 +124,10 @@ export function GameScreen({
       </div>
 
       {/* Bottom actions */}
-      <div className="px-3 pt-2 pb-20 grid grid-cols-3 gap-2">
+      <div 
+        className="px-3 pt-2 pb-20 grid grid-cols-3 gap-2"
+        style={{ paddingBottom: 'max(80px, calc(env(safe-area-inset-bottom) + 80px))' }}
+      >
         <button
           onClick={onLeave}
           className="bg-bingo-red text-white py-3 rounded-xl font-black text-xs tracking-wider shadow-[0_8px_20px_-8px_rgba(239,68,68,0.6)] active:scale-[0.98] transition-transform"

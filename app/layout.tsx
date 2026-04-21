@@ -44,7 +44,7 @@ export default function RootLayout({
       className={`${inter.variable} ${outfit.variable} bg-bingo-deep-purple`}
       suppressHydrationWarning
     >
-      <body className="font-sans antialiased">
+      <body className="ffont-sans antialiased h-dvh overflow-hidden">
         {children}
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>

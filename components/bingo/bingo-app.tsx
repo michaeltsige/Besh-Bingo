@@ -37,7 +37,7 @@ export function BingoApp() {
   // Cartela Selection Screen
   if (showSelection) {
     return (
-      <div className="flex flex-col h-screen w-full bg-bingo-deep-purple font-sans select-none max-w-[430px] mx-auto overflow-hidden relative border-x border-white/5">
+      <div className="flex flex-col h-dvh w-full bg-bingo-deep-purple font-sans select-none max-w-[430px] mx-auto overflow-hidden relative border-x border-white/5">
         <CartelaSelectionScreen
           onBack={game.handleBackFromSelection}
           onConfirm={game.handleSelectCartelas}
@@ -59,7 +59,7 @@ export function BingoApp() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-bingo-deep-purple font-sans select-none max-w-[430px] mx-auto overflow-hidden relative border-x border-white/5">
+    <div className="flex flex-col h-dvh w-full bg-bingo-deep-purple font-sans select-none max-w-[430px] mx-auto overflow-hidden relative border-x border-white/5">
       {showHeader && (
         <header className="px-6 pt-5 pb-2 flex justify-between items-center">
           <div className="flex items-center gap-2">

@@ -104,7 +104,7 @@ export function CartelaSelectionScreen({
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-bingo-deep-purple">
+    <div className="flex-1 flex flex-col h-dvh h-full bg-bingo-deep-purple">
       {/* Header */}
       <header className="px-4 pt-3 pb-2 flex items-center justify-between border-b border-white/10">
         <button 
@@ -237,7 +237,10 @@ export function CartelaSelectionScreen({
       )}
 
       {/* Bottom Action */}
-      <div className="p-4 border-t border-white/10">
+      <div 
+        className="p-4 border-t border-white/10"
+        style={{ paddingBottom: 'max(16px, calc(env(safe-area-inset-bottom) + 16px))' }}
+      >
         <div className="flex items-center justify-between mb-3">
           <span className="text-gray-400 text-sm">Total Cost:</span>
           <span className={cn(

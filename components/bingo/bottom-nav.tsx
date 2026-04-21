@@ -29,6 +29,7 @@ export function BottomNav({ activeTab, onChange }: BottomNavProps) {
     <nav
       aria-label="Primary"
       className="absolute bottom-0 w-full bg-bingo-purple/90 backdrop-blur-2xl border-t border-white/10 px-4 py-2 flex justify-between items-center z-40"
+      style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
     >
       {NAV_TABS.map((tab) => {
         const isActive = activeTab === tab.id
