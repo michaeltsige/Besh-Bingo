@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SocketProvider } from "@/contexts/SocketContext"; // <-- add this
 import "./globals.css";
 
 const inter = Inter({
@@ -38,14 +39,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Replace with your real test user UUID (from the database)
+  const devUserId = "a7251ca0-0c59-44cf-bf71-555dfe15c247";
+
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} bg-bingo-deep-purple`}
       suppressHydrationWarning
+      className={`${inter.variable} ${outfit.variable} bg-bingo-deep-purple`}
     >
-      <body className="ffont-sans antialiased h-dvh overflow-hidden">
-        {children}
+      <body className="font-sans antialiased h-dvh overflow-hidden">
+        <SocketProvider userId={devUserId}>
+          {children}
+        </SocketProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
